@@ -11,23 +11,29 @@ import com.example.rickandmortyapp.dto.external.ApiLocationDto;
 import com.example.rickandmortyapp.dto.external.ApiResponseLocationsDto;
 import com.example.rickandmortyapp.dto.mapper.ResponseMapper;
 import com.example.rickandmortyapp.model.Location;
+import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.repository.LocationRepository;
 import com.example.rickandmortyapp.service.ExternalDataService;
 import com.example.rickandmortyapp.service.HttpClient;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
+@Transactional
 @Service("locationService")
 public class LocationServiceImpl implements ExternalDataService {
     private final HttpClient httpClient;
     private final LocationRepository locationRepository;
+    private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<LocationResponseDto, ApiLocationDto, Location> locationMapper;
 
     public LocationServiceImpl(HttpClient httpClient, LocationRepository locationRepository,
+                               ExternalLinkRepository externalLinkRepository,
                                ResponseMapper<LocationResponseDto, ApiLocationDto, Location> locationMapper) {
         this.httpClient = httpClient;
         this.locationRepository = locationRepository;
+        this.externalLinkRepository = externalLinkRepository;
         this.locationMapper = locationMapper;
     }
 
@@ -54,6 +60,11 @@ public class LocationServiceImpl implements ExternalDataService {
         Map<Long, Location> existingLocationsWithIds = existingLocations.stream()
                 .collect(Collectors.toMap(Location::getExternalId, Function.identity()));
         Set<Long> existingIds = existingLocationsWithIds.keySet();
+
+        // todo
+        //      delete or not delete? update?
+        Set<Long> externalLinkIds = Set.copyOf(locationRepository.findAllIdExternalLinksByIdIn(existingIds));
+        externalLinkRepository.deleteAllByIdIn(externalLinkIds);
 
         List<Location> locationToUpdate = existingLocations.stream()
                 .map(l -> updateFieldLocation(l, externalDtos.get(l.getExternalId())))

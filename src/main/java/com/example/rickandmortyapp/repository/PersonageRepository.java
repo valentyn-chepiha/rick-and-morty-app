@@ -11,12 +11,11 @@ import org.springframework.stereotype.Repository;
 public interface PersonageRepository extends JpaRepository<Personage, Long> {
     List<Personage> findAllByExternalIdIn(Set<Long> externalIds);
 
-    Personage findByExternalId(Long externalId);
-
     @Query(value = "select p.* from personages p where UPPER(p.name) like UPPER('%' || ?1 || '%')",
             nativeQuery = true)
     List<Personage> findAllByNameContainsNoRegister(String name);
 
-    // todo
-    //      add episodes
+    @Query(value = "select e.external_link_id from personages_external_links e where e.personage_id in (?1)",
+            nativeQuery = true)
+    List<Long> findAllIdExternalLinksByIdIn(Set<Long> ids);
 }

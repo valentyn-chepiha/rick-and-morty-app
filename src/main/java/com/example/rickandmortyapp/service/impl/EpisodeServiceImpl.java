@@ -12,22 +12,28 @@ import com.example.rickandmortyapp.dto.external.ApiResponseEpisodesDto;
 import com.example.rickandmortyapp.dto.mapper.ResponseMapper;
 import com.example.rickandmortyapp.model.Episode;
 import com.example.rickandmortyapp.repository.EpisodeRepository;
+import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.service.ExternalDataService;
 import com.example.rickandmortyapp.service.HttpClient;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
+@Transactional
 @Service("episodeService")
 public class EpisodeServiceImpl implements ExternalDataService {
     private final HttpClient httpClient;
     private final EpisodeRepository episodeRepository;
+    private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<EpisodeResponseDto, ApiEpisodeDto, Episode> episodeMapper;
 
     public EpisodeServiceImpl(HttpClient httpClient, EpisodeRepository episodeRepository,
+                              ExternalLinkRepository externalLinkRepository,
                               ResponseMapper<EpisodeResponseDto, ApiEpisodeDto, Episode> episodeMapper) {
         this.httpClient = httpClient;
         this.episodeRepository = episodeRepository;
+        this.externalLinkRepository = externalLinkRepository;
         this.episodeMapper = episodeMapper;
     }
 
@@ -54,6 +60,11 @@ public class EpisodeServiceImpl implements ExternalDataService {
         Map<Long, Episode> existingEpisodesWithIds = existingEpisodes.stream()
                 .collect(Collectors.toMap(Episode::getExternalId, Function.identity()));
         Set<Long> existingIds = existingEpisodesWithIds.keySet();
+
+        // todo
+        //      delete or not delete? update?
+        Set<Long> externalLinkIds = Set.copyOf(episodeRepository.findAllIdExternalLinksByIdIn(existingIds));
+        externalLinkRepository.deleteAllByIdIn(externalLinkIds);
 
         List<Episode> episodesToUpdate = existingEpisodes.stream()
                 .map(e -> updateFieldEpisode(e, externalDtos.get(e.getExternalId())))

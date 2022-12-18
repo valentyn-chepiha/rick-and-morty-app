@@ -12,8 +12,7 @@ import com.example.rickandmortyapp.dto.external.ApiResponsePersonagesDto;
 import com.example.rickandmortyapp.dto.mapper.ResponseMapper;
 import com.example.rickandmortyapp.exception.DataProcessingException;
 import com.example.rickandmortyapp.model.Personage;
-import com.example.rickandmortyapp.repository.PersonageLocationRepository;
-import com.example.rickandmortyapp.repository.PersonageOriginRepository;
+import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.repository.PersonageRepository;
 import com.example.rickandmortyapp.service.HttpClient;
 import com.example.rickandmortyapp.service.PersonageService;
@@ -27,18 +26,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class PersonageServiceImpl implements PersonageService {
     private final HttpClient httpClient;
     private final PersonageRepository personageRepository;
-    private final PersonageOriginRepository personageOriginRepository;
-    private final PersonageLocationRepository personageLocationRepository;
+    private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<PersonageResponseDto, ApiPersonageDto, Personage> personageMapper;
 
     public PersonageServiceImpl(HttpClient httpClient, PersonageRepository personageRepository,
-                                PersonageOriginRepository personageOriginRepository,
-                                PersonageLocationRepository personageLocationRepository,
+                                ExternalLinkRepository externalLinkRepository,
                                 ResponseMapper<PersonageResponseDto, ApiPersonageDto, Personage> personageMapper) {
         this.httpClient = httpClient;
         this.personageRepository = personageRepository;
-        this.personageOriginRepository = personageOriginRepository;
-        this.personageLocationRepository = personageLocationRepository;
+        this.externalLinkRepository = externalLinkRepository;
         this.personageMapper = personageMapper;
     }
 
@@ -74,6 +70,11 @@ public class PersonageServiceImpl implements PersonageService {
                 .collect(Collectors.toMap(Personage::getExternalId, Function.identity()));
         Set<Long> existingIds = existingPersonagesWithIds.keySet();
 
+        // todo
+        //      delete or not delete? update?
+        Set<Long> externalLinkIds = Set.copyOf(personageRepository.findAllIdExternalLinksByIdIn(existingIds));
+        externalLinkRepository.deleteAllByIdIn(externalLinkIds);
+
         List<Personage> personagesToUpdate = existingPersonages.stream()
                 .map(p -> updateFieldPersonage(p, externalsDtos.get(p.getExternalId())))
                 .collect(Collectors.toList());
@@ -94,8 +95,9 @@ public class PersonageServiceImpl implements PersonageService {
         oldPersonage.setGender(newPersonage.getGender());
         oldPersonage.setName(newPersonage.getName());
         oldPersonage.setImage(newPersonage.getImage());
-// todo
-//      change update external_links
+        // todo
+        //      change update external_links
+        //      will be NPE if null in db
         oldPersonage.setEpisodes(newPersonage.getEpisodes());
 
         if (newPersonage.getOrigin() == null) {
