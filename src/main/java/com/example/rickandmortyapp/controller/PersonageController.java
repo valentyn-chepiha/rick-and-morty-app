@@ -1,11 +1,11 @@
 package com.example.rickandmortyapp.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.PersonageResponseDto;
 import com.example.rickandmortyapp.dto.mapper.impl.PersonageMapper;
 import com.example.rickandmortyapp.repository.PersonageRepository;
 import com.example.rickandmortyapp.service.PersonageService;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -32,7 +32,8 @@ public class PersonageController {
     }
 
     @GetMapping("/by-name")
-    public List<PersonageResponseDto> getListPersonagesLikeSubstring(@RequestParam(name = "name") String namePart) {
+    public List<PersonageResponseDto> getListPersonagesLikeSubstring(@RequestParam(name = "name")
+                                                                                 String namePart) {
         return personageRepository.findAllByNameContainsNoRegister(namePart).stream()
                 .map(personageMapper::toResponseDto)
                 .collect(Collectors.toList());

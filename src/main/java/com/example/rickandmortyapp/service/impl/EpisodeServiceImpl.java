@@ -1,11 +1,5 @@
 package com.example.rickandmortyapp.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.EpisodeResponseDto;
 import com.example.rickandmortyapp.dto.external.ApiEpisodeDto;
 import com.example.rickandmortyapp.dto.external.ApiResponseEpisodesDto;
@@ -16,6 +10,12 @@ import com.example.rickandmortyapp.repository.EpisodeRepository;
 import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.service.ExternalDataService;
 import com.example.rickandmortyapp.service.HttpClient;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +29,10 @@ public class EpisodeServiceImpl implements ExternalDataService {
     private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<EpisodeResponseDto, ApiEpisodeDto, Episode> episodeMapper;
 
-    public EpisodeServiceImpl(HttpClient httpClient, EpisodeRepository episodeRepository,
-                              ExternalLinkRepository externalLinkRepository,
-                              ResponseMapper<EpisodeResponseDto, ApiEpisodeDto, Episode> episodeMapper) {
+    public EpisodeServiceImpl(
+            HttpClient httpClient, EpisodeRepository episodeRepository,
+            ExternalLinkRepository externalLinkRepository,
+            ResponseMapper<EpisodeResponseDto, ApiEpisodeDto, Episode> episodeMapper) {
         this.httpClient = httpClient;
         this.episodeRepository = episodeRepository;
         this.externalLinkRepository = externalLinkRepository;
@@ -43,8 +44,8 @@ public class EpisodeServiceImpl implements ExternalDataService {
         log.info("EpisodeServiceImpl.syncExternalData started ...");
         ApiResponseEpisodesDto apiResponseEpisodesDto = null;
         do {
-            String url = apiResponseEpisodesDto == null ?
-                    "https://rickandmortyapi.com/api/episode"
+            String url = apiResponseEpisodesDto == null
+                    ? "https://rickandmortyapi.com/api/episode"
                     : apiResponseEpisodesDto.getInfo().getNext();
             apiResponseEpisodesDto = httpClient.get(url, ApiResponseEpisodesDto.class);
             saveToDb(apiResponseEpisodesDto);
@@ -89,7 +90,8 @@ public class EpisodeServiceImpl implements ExternalDataService {
                 .filter(k -> newEpisodeCharacters.get(k) == null)
                 .collect(Collectors.toList()));
         if (idsToDelete.size() > 0) {
-            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldEpisode.getId(), idsToDelete);
+            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldEpisode.getId(),
+                    idsToDelete);
         }
 
         List<ExternalLink> externalLinksToUpdate = newEpisode.getCharacters().stream()

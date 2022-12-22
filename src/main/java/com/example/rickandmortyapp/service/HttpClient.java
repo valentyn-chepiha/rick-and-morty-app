@@ -1,9 +1,9 @@
 package com.example.rickandmortyapp.service;
 
-import java.io.IOException;
 import com.example.rickandmortyapp.exception.DataProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.IOException;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 public class HttpClient {
     private final CloseableHttpClient httpClient = HttpClients.createDefault();
     private ObjectMapper objectMapper = new ObjectMapper();
+
     {
         objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }

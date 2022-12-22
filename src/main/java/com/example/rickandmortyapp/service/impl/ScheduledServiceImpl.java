@@ -14,7 +14,8 @@ public class ScheduledServiceImpl implements ScheduledService {
     private final ExternalDataService episodeService;
     private final ExternalDataService locationService;
 
-    public ScheduledServiceImpl(PersonageService personageService, ExternalDataService episodeService,
+    public ScheduledServiceImpl(PersonageService personageService,
+                                ExternalDataService episodeService,
                                 ExternalDataService locationService) {
         this.personageService = personageService;
         this.episodeService = episodeService;

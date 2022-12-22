@@ -1,7 +1,5 @@
 package com.example.rickandmortyapp.dto.mapper.impl;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.ExternalLinkResponseDto;
 import com.example.rickandmortyapp.dto.PersonageLocationResponseDto;
 import com.example.rickandmortyapp.dto.PersonageOriginResponseDto;
@@ -17,18 +15,27 @@ import com.example.rickandmortyapp.model.PersonageLocation;
 import com.example.rickandmortyapp.model.PersonageOrigin;
 import com.example.rickandmortyapp.model.type.TypeGender;
 import com.example.rickandmortyapp.model.type.TypeStatus;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
 public class PersonageMapper implements
         ResponseMapper<PersonageResponseDto, ApiPersonageDto, Personage> {
-    private final ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto, ExternalLink> externalLinkMapper;
-    private final ResponseMapper<PersonageOriginResponseDto, ApiPersonageOriginDto, PersonageOrigin> personageOriginMapper;
-    private final ResponseMapper<PersonageLocationResponseDto, ApiPersonageLocationDto, PersonageLocation> personageLocationMapper;
+    private final ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto, ExternalLink>
+            externalLinkMapper;
+    private final ResponseMapper<PersonageOriginResponseDto, ApiPersonageOriginDto,
+            PersonageOrigin> personageOriginMapper;
+    private final ResponseMapper<PersonageLocationResponseDto, ApiPersonageLocationDto,
+            PersonageLocation> personageLocationMapper;
 
-    public PersonageMapper(ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto, ExternalLink> externalLinkMapper,
-                           ResponseMapper<PersonageOriginResponseDto, ApiPersonageOriginDto, PersonageOrigin> personageOriginMapper,
-                           ResponseMapper<PersonageLocationResponseDto, ApiPersonageLocationDto, PersonageLocation> personageLocationMapper) {
+    public PersonageMapper(
+            ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto, ExternalLink>
+                    externalLinkMapper,
+            ResponseMapper<PersonageOriginResponseDto, ApiPersonageOriginDto, PersonageOrigin>
+                    personageOriginMapper,
+            ResponseMapper<PersonageLocationResponseDto, ApiPersonageLocationDto,
+                    PersonageLocation> personageLocationMapper) {
         this.externalLinkMapper = externalLinkMapper;
         this.personageOriginMapper = personageOriginMapper;
         this.personageLocationMapper = personageLocationMapper;
@@ -53,7 +60,8 @@ public class PersonageMapper implements
             personage.getOrigin().setPersonage(personage);
         }
         if (!dto.getLocation().getUrl().isEmpty()) {
-            personage.setLocation(personageLocationMapper.parseApiEntityResponseDto(dto.getLocation()));
+            personage.setLocation(personageLocationMapper.parseApiEntityResponseDto(
+                    dto.getLocation()));
             personage.getLocation().setPersonage(personage);
         }
         return personage;

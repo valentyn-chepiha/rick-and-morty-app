@@ -1,11 +1,5 @@
 package com.example.rickandmortyapp.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.LocationResponseDto;
 import com.example.rickandmortyapp.dto.external.ApiLocationDto;
 import com.example.rickandmortyapp.dto.external.ApiResponseLocationsDto;
@@ -16,6 +10,12 @@ import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.repository.LocationRepository;
 import com.example.rickandmortyapp.service.ExternalDataService;
 import com.example.rickandmortyapp.service.HttpClient;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +29,10 @@ public class LocationServiceImpl implements ExternalDataService {
     private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<LocationResponseDto, ApiLocationDto, Location> locationMapper;
 
-    public LocationServiceImpl(HttpClient httpClient, LocationRepository locationRepository,
-                               ExternalLinkRepository externalLinkRepository,
-                               ResponseMapper<LocationResponseDto, ApiLocationDto, Location> locationMapper) {
+    public LocationServiceImpl(
+            HttpClient httpClient, LocationRepository locationRepository,
+            ExternalLinkRepository externalLinkRepository,
+            ResponseMapper<LocationResponseDto, ApiLocationDto, Location> locationMapper) {
         this.httpClient = httpClient;
         this.locationRepository = locationRepository;
         this.externalLinkRepository = externalLinkRepository;
@@ -89,7 +90,8 @@ public class LocationServiceImpl implements ExternalDataService {
                 .filter(k -> newLocationResidents.get(k) == null)
                 .collect(Collectors.toList()));
         if (idsToDelete.size() > 0) {
-            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldLocation.getId(), idsToDelete);
+            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldLocation.getId(),
+                    idsToDelete);
         }
 
         List<ExternalLink> externalLinkToUpdate = newLocation.getResidents().stream()

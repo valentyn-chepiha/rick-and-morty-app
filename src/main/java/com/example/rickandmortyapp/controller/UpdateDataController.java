@@ -15,7 +15,7 @@ public class UpdateDataController {
     }
 
     @GetMapping
-    public String runUpdate(){
+    public String runUpdate() {
         scheduledService.syncExternalData();
         return "Done!!";
     }

@@ -1,11 +1,5 @@
 package com.example.rickandmortyapp.service.impl;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.PersonageResponseDto;
 import com.example.rickandmortyapp.dto.external.ApiPersonageDto;
 import com.example.rickandmortyapp.dto.external.ApiResponsePersonagesDto;
@@ -17,6 +11,12 @@ import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.repository.PersonageRepository;
 import com.example.rickandmortyapp.service.HttpClient;
 import com.example.rickandmortyapp.service.PersonageService;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,9 +30,10 @@ public class PersonageServiceImpl implements PersonageService {
     private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<PersonageResponseDto, ApiPersonageDto, Personage> personageMapper;
 
-    public PersonageServiceImpl(HttpClient httpClient, PersonageRepository personageRepository,
-                                ExternalLinkRepository externalLinkRepository,
-                                ResponseMapper<PersonageResponseDto, ApiPersonageDto, Personage> personageMapper) {
+    public PersonageServiceImpl(
+            HttpClient httpClient, PersonageRepository personageRepository,
+            ExternalLinkRepository externalLinkRepository,
+            ResponseMapper<PersonageResponseDto, ApiPersonageDto, Personage> personageMapper) {
         this.httpClient = httpClient;
         this.personageRepository = personageRepository;
         this.externalLinkRepository = externalLinkRepository;
@@ -62,11 +63,13 @@ public class PersonageServiceImpl implements PersonageService {
     }
 
     private void saveDtpToDb(ApiResponsePersonagesDto apiResponsePersonagesDto) {
-        Map<Long, ApiPersonageDto> externalsDtos = Arrays.stream(apiResponsePersonagesDto.getResults())
+        Map<Long, ApiPersonageDto> externalsDtos = Arrays
+                .stream(apiResponsePersonagesDto.getResults())
                 .collect(Collectors.toMap(ApiPersonageDto::getId, Function.identity()));
         Set<Long> externalIds = externalsDtos.keySet();
 
-        List<Personage> existingPersonages = personageRepository.findAllByExternalIdIn(externalIds);
+        List<Personage> existingPersonages = personageRepository
+                .findAllByExternalIdIn(externalIds);
         Map<Long, Personage> existingPersonagesWithIds = existingPersonages.stream()
                 .collect(Collectors.toMap(Personage::getExternalId, Function.identity()));
         Set<Long> existingIds = existingPersonagesWithIds.keySet();
@@ -101,7 +104,8 @@ public class PersonageServiceImpl implements PersonageService {
                 .filter(k -> newPersonageEpisodes.get(k) == null)
                 .collect(Collectors.toList()));
         if (idsToDelete.size() > 0) {
-            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldPersonage.getId(), idsToDelete);
+            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldPersonage.getId(),
+                    idsToDelete);
         }
 
         List<ExternalLink> externalLinksToUpdate = newPersonage.getEpisodes().stream()

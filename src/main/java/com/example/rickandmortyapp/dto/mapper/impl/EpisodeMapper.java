@@ -1,7 +1,5 @@
 package com.example.rickandmortyapp.dto.mapper.impl;
 
-import java.util.Arrays;
-import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.EpisodeResponseDto;
 import com.example.rickandmortyapp.dto.ExternalLinkResponseDto;
 import com.example.rickandmortyapp.dto.external.ApiEpisodeDto;
@@ -9,13 +7,17 @@ import com.example.rickandmortyapp.dto.external.ApiExternalLinkDto;
 import com.example.rickandmortyapp.dto.mapper.ResponseMapper;
 import com.example.rickandmortyapp.model.Episode;
 import com.example.rickandmortyapp.model.ExternalLink;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EpisodeMapper implements ResponseMapper<EpisodeResponseDto, ApiEpisodeDto, Episode> {
-    private final ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto, ExternalLink> externalLinkMapper;
+    private final ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto, ExternalLink>
+            externalLinkMapper;
 
-    public EpisodeMapper(ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto, ExternalLink> externalLinkMapper) {
+    public EpisodeMapper(ResponseMapper<ExternalLinkResponseDto, ApiExternalLinkDto,
+            ExternalLink> externalLinkMapper) {
         this.externalLinkMapper = externalLinkMapper;
     }
 
