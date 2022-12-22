@@ -45,7 +45,8 @@ public class PersonageMapper implements
         personage.setExternalId(dto.getId());
         personage.setImage(dto.getImage());
         personage.setEpisodes(Arrays.stream(dto.getEpisode())
-                .map(e -> externalLinkMapper.parseApiEntityResponseDto(new ApiExternalLinkDto(e)))
+                .map(ApiExternalLinkDto::new)
+                .map(externalLinkMapper::parseApiEntityResponseDto)
                 .collect(Collectors.toList()));
         if (!dto.getOrigin().getUrl().isEmpty()) {
             personage.setOrigin(personageOriginMapper.parseApiEntityResponseDto(dto.getOrigin()));

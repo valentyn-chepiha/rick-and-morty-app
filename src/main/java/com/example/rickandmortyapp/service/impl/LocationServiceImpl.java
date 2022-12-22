@@ -10,6 +10,7 @@ import com.example.rickandmortyapp.dto.LocationResponseDto;
 import com.example.rickandmortyapp.dto.external.ApiLocationDto;
 import com.example.rickandmortyapp.dto.external.ApiResponseLocationsDto;
 import com.example.rickandmortyapp.dto.mapper.ResponseMapper;
+import com.example.rickandmortyapp.model.ExternalLink;
 import com.example.rickandmortyapp.model.Location;
 import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.repository.LocationRepository;
@@ -61,11 +62,6 @@ public class LocationServiceImpl implements ExternalDataService {
                 .collect(Collectors.toMap(Location::getExternalId, Function.identity()));
         Set<Long> existingIds = existingLocationsWithIds.keySet();
 
-        // todo
-        //      delete or not delete? update?
-        Set<Long> externalLinkIds = Set.copyOf(locationRepository.findAllIdExternalLinksByIdIn(existingIds));
-        externalLinkRepository.deleteAllByIdIn(externalLinkIds);
-
         List<Location> locationToUpdate = existingLocations.stream()
                 .map(l -> updateFieldLocation(l, externalDtos.get(l.getExternalId())))
                 .collect(Collectors.toList());
@@ -83,7 +79,23 @@ public class LocationServiceImpl implements ExternalDataService {
         oldLocation.setType(newLocation.getType());
         oldLocation.setDimension(newLocation.getDimension());
         oldLocation.setName(newLocation.getName());
-        oldLocation.setResidents(newLocation.getResidents());
+
+        Map<Long, ExternalLink> oldLocationResidents = oldLocation.getResidents().stream()
+                .collect(Collectors.toMap(ExternalLink::getExternalId, Function.identity()));
+        Map<Long, ExternalLink> newLocationResidents = newLocation.getResidents().stream()
+                .collect(Collectors.toMap(ExternalLink::getExternalId, Function.identity()));
+
+        Set<Long> idsToDelete = Set.copyOf(oldLocationResidents.keySet().stream()
+                .filter(k -> newLocationResidents.get(k) == null)
+                .collect(Collectors.toList()));
+        if (idsToDelete.size() > 0) {
+            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldLocation.getId(), idsToDelete);
+        }
+
+        List<ExternalLink> externalLinkToUpdate = newLocation.getResidents().stream()
+                .peek(l -> l.setId(oldLocationResidents.get(l.getExternalId()).getId()))
+                .collect(Collectors.toList());
+        oldLocation.setResidents(externalLinkToUpdate);
 
         return oldLocation;
     }

@@ -11,6 +11,7 @@ import com.example.rickandmortyapp.dto.external.ApiEpisodeDto;
 import com.example.rickandmortyapp.dto.external.ApiResponseEpisodesDto;
 import com.example.rickandmortyapp.dto.mapper.ResponseMapper;
 import com.example.rickandmortyapp.model.Episode;
+import com.example.rickandmortyapp.model.ExternalLink;
 import com.example.rickandmortyapp.repository.EpisodeRepository;
 import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.service.ExternalDataService;
@@ -61,11 +62,6 @@ public class EpisodeServiceImpl implements ExternalDataService {
                 .collect(Collectors.toMap(Episode::getExternalId, Function.identity()));
         Set<Long> existingIds = existingEpisodesWithIds.keySet();
 
-        // todo
-        //      delete or not delete? update?
-        Set<Long> externalLinkIds = Set.copyOf(episodeRepository.findAllIdExternalLinksByIdIn(existingIds));
-        externalLinkRepository.deleteAllByIdIn(externalLinkIds);
-
         List<Episode> episodesToUpdate = existingEpisodes.stream()
                 .map(e -> updateFieldEpisode(e, externalDtos.get(e.getExternalId())))
                 .collect(Collectors.toList());
@@ -83,7 +79,23 @@ public class EpisodeServiceImpl implements ExternalDataService {
         oldEpisode.setEpisode(newEpisode.getEpisode());
         oldEpisode.setAirDate(newEpisode.getAirDate());
         oldEpisode.setName(newEpisode.getName());
-        oldEpisode.setCharacters(newEpisode.getCharacters());
+
+        Map<Long, ExternalLink> oldEpisodeCharacters = oldEpisode.getCharacters().stream()
+                .collect(Collectors.toMap(ExternalLink::getExternalId, Function.identity()));
+        Map<Long, ExternalLink> newEpisodeCharacters = newEpisode.getCharacters().stream()
+                .collect(Collectors.toMap(ExternalLink::getExternalId, Function.identity()));
+
+        Set<Long> idsToDelete = Set.copyOf(oldEpisodeCharacters.keySet().stream()
+                .filter(k -> newEpisodeCharacters.get(k) == null)
+                .collect(Collectors.toList()));
+        if (idsToDelete.size() > 0) {
+            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldEpisode.getId(), idsToDelete);
+        }
+
+        List<ExternalLink> externalLinksToUpdate = newEpisode.getCharacters().stream()
+                .peek(c -> c.setId(oldEpisodeCharacters.get(c.getExternalId()).getId()))
+                .collect(Collectors.toList());
+        oldEpisode.setCharacters(externalLinksToUpdate);
         return oldEpisode;
     }
 }

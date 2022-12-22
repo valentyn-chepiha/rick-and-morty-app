@@ -1,7 +1,6 @@
 package com.example.rickandmortyapp.dto.mapper.impl;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.ExternalLinkResponseDto;
 import com.example.rickandmortyapp.dto.LocationResponseDto;
@@ -28,7 +27,8 @@ public class LocationMapper implements ResponseMapper<LocationResponseDto, ApiLo
         location.setDimension(dto.getDimension());
         location.setType(dto.getType());
         location.setResidents(Arrays.stream(dto.getResidents())
-                .map(s -> externalLinkMapper.parseApiEntityResponseDto(new ApiExternalLinkDto(s)))
+                .map(ApiExternalLinkDto::new)
+                .map(externalLinkMapper::parseApiEntityResponseDto)
                 .collect(Collectors.toList()));
         return location;
     }

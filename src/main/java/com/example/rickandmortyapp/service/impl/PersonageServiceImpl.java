@@ -11,6 +11,7 @@ import com.example.rickandmortyapp.dto.external.ApiPersonageDto;
 import com.example.rickandmortyapp.dto.external.ApiResponsePersonagesDto;
 import com.example.rickandmortyapp.dto.mapper.ResponseMapper;
 import com.example.rickandmortyapp.exception.DataProcessingException;
+import com.example.rickandmortyapp.model.ExternalLink;
 import com.example.rickandmortyapp.model.Personage;
 import com.example.rickandmortyapp.repository.ExternalLinkRepository;
 import com.example.rickandmortyapp.repository.PersonageRepository;
@@ -70,11 +71,6 @@ public class PersonageServiceImpl implements PersonageService {
                 .collect(Collectors.toMap(Personage::getExternalId, Function.identity()));
         Set<Long> existingIds = existingPersonagesWithIds.keySet();
 
-        // todo
-        //      delete or not delete? update?
-        Set<Long> externalLinkIds = Set.copyOf(personageRepository.findAllIdExternalLinksByIdIn(existingIds));
-        externalLinkRepository.deleteAllByIdIn(externalLinkIds);
-
         List<Personage> personagesToUpdate = existingPersonages.stream()
                 .map(p -> updateFieldPersonage(p, externalsDtos.get(p.getExternalId())))
                 .collect(Collectors.toList());
@@ -95,10 +91,23 @@ public class PersonageServiceImpl implements PersonageService {
         oldPersonage.setGender(newPersonage.getGender());
         oldPersonage.setName(newPersonage.getName());
         oldPersonage.setImage(newPersonage.getImage());
-        // todo
-        //      change update external_links
-        //      will be NPE if null in db
-        oldPersonage.setEpisodes(newPersonage.getEpisodes());
+
+        Map<Long, ExternalLink> oldPersonageEpisodes = oldPersonage.getEpisodes().stream()
+                .collect(Collectors.toMap(ExternalLink::getExternalId, Function.identity()));
+        Map<Long, ExternalLink> newPersonageEpisodes = newPersonage.getEpisodes().stream()
+                .collect(Collectors.toMap(ExternalLink::getExternalId, Function.identity()));
+
+        Set<Long> idsToDelete = Set.copyOf(oldPersonageEpisodes.keySet().stream()
+                .filter(k -> newPersonageEpisodes.get(k) == null)
+                .collect(Collectors.toList()));
+        if (idsToDelete.size() > 0) {
+            externalLinkRepository.deleteAllByParentIdAndExternalIdIn(oldPersonage.getId(), idsToDelete);
+        }
+
+        List<ExternalLink> externalLinksToUpdate = newPersonage.getEpisodes().stream()
+                .peek(e -> e.setId(oldPersonageEpisodes.get(e.getExternalId()).getId()))
+                .collect(Collectors.toList());
+        oldPersonage.setEpisodes(externalLinksToUpdate);
 
         if (newPersonage.getOrigin() == null) {
             oldPersonage.setOrigin(null);

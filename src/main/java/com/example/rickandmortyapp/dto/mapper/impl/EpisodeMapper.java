@@ -1,7 +1,6 @@
 package com.example.rickandmortyapp.dto.mapper.impl;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 import com.example.rickandmortyapp.dto.EpisodeResponseDto;
 import com.example.rickandmortyapp.dto.ExternalLinkResponseDto;

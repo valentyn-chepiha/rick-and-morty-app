@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class ExternalLinkMapper implements ResponseMapper<ExternalLinkResponseDto,
         ApiExternalLinkDto, ExternalLink> {
+    private static final String URL_SEPARATOR = "/";
+
     @Override
     public ExternalLink parseApiEntityResponseDto(ApiExternalLinkDto dto) {
         ExternalLink externalLink = new ExternalLink();
-        String[] link = dto.getLink().split("/");
+        String[] link = dto.getLink().split(URL_SEPARATOR);
         externalLink.setExternalId(Long.parseLong(link[link.length - 1]));
         return externalLink;
     }

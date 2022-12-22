@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersonageOriginMapper implements ResponseMapper<PersonageOriginResponseDto,
         ApiPersonageOriginDto, PersonageOrigin> {
+    private static final String URL_SEPARATOR = "/";
+
     @Override
     public PersonageOrigin parseApiEntityResponseDto(ApiPersonageOriginDto dto) {
         PersonageOrigin personageOrigin = new PersonageOrigin();
-        String[] urlParams = dto.getUrl().split("/");
+        String[] urlParams = dto.getUrl().split(URL_SEPARATOR);
         personageOrigin.setEternalId(Long.parseLong(urlParams[urlParams.length - 1]));
         personageOrigin.setName(dto.getName());
         return personageOrigin;

@@ -9,10 +9,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class PersonageLocationMapper implements ResponseMapper<PersonageLocationResponseDto,
         ApiPersonageLocationDto, PersonageLocation> {
+    private static final String URL_SEPARATOR = "/";
+
     @Override
     public PersonageLocation parseApiEntityResponseDto(ApiPersonageLocationDto dto) {
         PersonageLocation personageLocation = new PersonageLocation();
-        String[] url = dto.getUrl().split("/");
+        String[] url = dto.getUrl().split(URL_SEPARATOR);
         personageLocation.setEternalId(Long.parseLong(url[url.length - 1]));
         personageLocation.setName(dto.getName());
         return personageLocation;
