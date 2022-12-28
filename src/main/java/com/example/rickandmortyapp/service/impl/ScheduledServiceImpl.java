@@ -28,7 +28,7 @@ public class ScheduledServiceImpl implements ScheduledService {
         log.info("ScheduledServiceImpl start...");
         locationService.syncExternalData();
         episodeService.syncExternalData();
-        personageService.syncExternalPersonages();
+        personageService.syncExternalData();
         log.info("ScheduledServiceImpl finish...");
     }
 }

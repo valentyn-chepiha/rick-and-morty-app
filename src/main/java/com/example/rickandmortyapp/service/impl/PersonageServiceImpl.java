@@ -46,7 +46,7 @@ public class PersonageServiceImpl implements PersonageService {
 
     @Transactional
     @Override
-    public void syncExternalPersonages() {
+    public void syncExternalData() {
         log.info("PersonageServiceImpl.syncExternalPersonages started...");
         ApiResponsePersonagesDto apiResponsePersonagesDto = null;
         do {
