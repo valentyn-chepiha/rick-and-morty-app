@@ -18,6 +18,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,10 @@ public class PersonageServiceImpl implements PersonageService {
     private final PersonageRepository personageRepository;
     private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<PersonageResponseDto, ApiPersonageDto, Personage> personageMapper;
+    @Value("${app.external.data.url}")
+    private String dataUrl;
+    @Value("${app.external.data.sufix.personage}")
+    private String sufixPersonageUrl;
 
     public PersonageServiceImpl(
             HttpClient httpClient, PersonageRepository personageRepository,
@@ -46,7 +51,7 @@ public class PersonageServiceImpl implements PersonageService {
         ApiResponsePersonagesDto apiResponsePersonagesDto = null;
         do {
             String url = apiResponsePersonagesDto == null
-                    ? "https://rickandmortyapi.com/api/character"
+                    ? dataUrl + sufixPersonageUrl
                     : apiResponsePersonagesDto.getInfo().getNext();
             apiResponsePersonagesDto = httpClient.get(url, ApiResponsePersonagesDto.class);
             saveDtpToDb(apiResponsePersonagesDto);

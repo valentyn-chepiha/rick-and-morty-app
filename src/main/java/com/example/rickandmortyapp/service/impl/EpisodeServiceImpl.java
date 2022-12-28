@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,10 @@ public class EpisodeServiceImpl implements ExternalDataService {
     private final EpisodeRepository episodeRepository;
     private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<EpisodeResponseDto, ApiEpisodeDto, Episode> episodeMapper;
+    @Value("${app.external.data.url}")
+    private String dataUrl;
+    @Value("${app.external.data.sufix.episode}")
+    private String sufixEpisodeUrl;
 
     public EpisodeServiceImpl(
             HttpClient httpClient, EpisodeRepository episodeRepository,
@@ -45,7 +50,7 @@ public class EpisodeServiceImpl implements ExternalDataService {
         ApiResponseEpisodesDto apiResponseEpisodesDto = null;
         do {
             String url = apiResponseEpisodesDto == null
-                    ? "https://rickandmortyapi.com/api/episode"
+                    ? dataUrl + sufixEpisodeUrl
                     : apiResponseEpisodesDto.getInfo().getNext();
             apiResponseEpisodesDto = httpClient.get(url, ApiResponseEpisodesDto.class);
             saveToDb(apiResponseEpisodesDto);

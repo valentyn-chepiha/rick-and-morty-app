@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,10 @@ public class LocationServiceImpl implements ExternalDataService {
     private final LocationRepository locationRepository;
     private final ExternalLinkRepository externalLinkRepository;
     private final ResponseMapper<LocationResponseDto, ApiLocationDto, Location> locationMapper;
+    @Value("${app.external.data.url}")
+    private String dataUrl;
+    @Value("${app.external.data.sufix.location}")
+    private String sufixLocationUrl;
 
     public LocationServiceImpl(
             HttpClient httpClient, LocationRepository locationRepository,
@@ -45,7 +50,7 @@ public class LocationServiceImpl implements ExternalDataService {
         ApiResponseLocationsDto apiResponseLocationsDto = null;
         do {
             String url = apiResponseLocationsDto == null
-                    ? "https://rickandmortyapi.com/api/location"
+                    ? dataUrl + sufixLocationUrl
                     : apiResponseLocationsDto.getInfo().getNext();
             apiResponseLocationsDto = httpClient.get(url, ApiResponseLocationsDto.class);
             saveToDb(apiResponseLocationsDto);
