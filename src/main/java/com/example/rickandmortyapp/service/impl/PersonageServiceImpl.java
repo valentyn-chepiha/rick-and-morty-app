@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
-@Transactional
 @Service
 public class PersonageServiceImpl implements PersonageService {
     private final HttpClient httpClient;
@@ -45,6 +44,7 @@ public class PersonageServiceImpl implements PersonageService {
         this.personageMapper = personageMapper;
     }
 
+    @Transactional
     @Override
     public void syncExternalPersonages() {
         log.info("PersonageServiceImpl.syncExternalPersonages started...");

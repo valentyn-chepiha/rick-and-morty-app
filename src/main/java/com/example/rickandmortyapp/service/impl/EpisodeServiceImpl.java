@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
-@Transactional
 @Service("episodeService")
 public class EpisodeServiceImpl implements ExternalDataService {
     private final HttpClient httpClient;
@@ -44,6 +43,7 @@ public class EpisodeServiceImpl implements ExternalDataService {
         this.episodeMapper = episodeMapper;
     }
 
+    @Transactional
     @Override
     public void syncExternalData() {
         log.info("EpisodeServiceImpl.syncExternalData started ...");

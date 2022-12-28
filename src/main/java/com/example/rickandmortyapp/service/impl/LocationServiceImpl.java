@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
-@Transactional
 @Service("locationService")
 public class LocationServiceImpl implements ExternalDataService {
     private final HttpClient httpClient;
@@ -44,6 +43,7 @@ public class LocationServiceImpl implements ExternalDataService {
         this.locationMapper = locationMapper;
     }
 
+    @Transactional
     @Override
     public void syncExternalData() {
         log.info("LocationServiceImpl.syncExternalData started ...");
