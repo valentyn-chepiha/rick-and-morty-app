@@ -25,7 +25,7 @@ import lombok.ToString;
 
 @Setter
 @Getter
-@ToString
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "personages")
 public class Personage {
@@ -33,16 +33,24 @@ public class Personage {
     @GeneratedValue(generator = "personages_id_seq", strategy = GenerationType.SEQUENCE)
     @SequenceGenerator(name = "personages_id_seq", sequenceName = "personages_id_seq",
             allocationSize = 1)
+    @ToString.Include
     private Long id;
     @Column(name = "external_id")
+    @ToString.Include
     private Long externalId;
+    @ToString.Include
     private String name;
     @Enumerated(EnumType.STRING)
+    @ToString.Include
     private TypeStatus status;
+    @ToString.Include
     private String specie;
+    @ToString.Include
     private String type;
     @Enumerated(EnumType.STRING)
+    @ToString.Include
     private TypeGender gender;
+    @ToString.Include
     private String image;
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(
