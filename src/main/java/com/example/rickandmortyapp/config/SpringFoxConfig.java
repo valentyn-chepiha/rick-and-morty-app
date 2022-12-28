@@ -1,4 +1,4 @@
-package com.example.rickandmortyapp;
+package com.example.rickandmortyapp.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
