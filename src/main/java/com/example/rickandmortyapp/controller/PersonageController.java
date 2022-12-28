@@ -32,10 +32,15 @@ public class PersonageController {
     }
 
     @GetMapping("/by-name")
-    public List<PersonageResponseDto> getListPersonagesLikeSubstring(@RequestParam(name = "name")
-                                                                                 String namePart) {
+    public List<PersonageResponseDto> getListPersonagesLikeSubstring(
+            @RequestParam(name = "name") String namePart) {
         return personageRepository.findAllByNameContainsNoRegister(namePart).stream()
                 .map(personageMapper::toResponseDto)
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping
+    public PersonageResponseDto getPersonageById(@RequestParam(name = "id") Long id) {
+        return personageMapper.toResponseDto(personageRepository.getById(id));
     }
 }
