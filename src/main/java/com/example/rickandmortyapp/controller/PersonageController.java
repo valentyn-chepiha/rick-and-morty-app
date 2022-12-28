@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/personage")
+@RequestMapping("/personages")
 public class PersonageController {
     private final PersonageRepository personageRepository;
     private final PersonageService personageService;
