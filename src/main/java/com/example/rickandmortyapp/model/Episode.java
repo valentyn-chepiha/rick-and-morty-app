@@ -32,7 +32,7 @@ public class Episode {
     @Column(name = "air_date")
     private String airDate;
     private String episode;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "episodes_external_links",
             joinColumns = @JoinColumn(name = "episode_id"),

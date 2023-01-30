@@ -31,7 +31,7 @@ public class Location {
     private String name;
     private String type;
     private String dimension;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "locations_external_links",
             joinColumns = @JoinColumn(name = "location_id"),

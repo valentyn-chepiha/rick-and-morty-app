@@ -1,7 +1,5 @@
 package com.example.rickandmortyapp.model;
 
-import com.example.rickandmortyapp.model.type.TypeGender;
-import com.example.rickandmortyapp.model.type.TypeStatus;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -19,6 +17,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import com.example.rickandmortyapp.model.type.TypeGender;
+import com.example.rickandmortyapp.model.type.TypeStatus;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -52,7 +52,7 @@ public class Personage {
     private TypeGender gender;
     @ToString.Include
     private String image;
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinTable(
             name = "personages_external_links",
             joinColumns = @JoinColumn(name = "personage_id"),

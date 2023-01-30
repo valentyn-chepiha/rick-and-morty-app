@@ -2,6 +2,7 @@ package com.example.rickandmortyapp.controller;
 
 import com.example.rickandmortyapp.dto.PersonageResponseDto;
 import com.example.rickandmortyapp.dto.mapper.impl.PersonageMapper;
+import com.example.rickandmortyapp.model.Personage;
 import com.example.rickandmortyapp.repository.PersonageRepository;
 import com.example.rickandmortyapp.service.PersonageService;
 import java.util.List;
@@ -41,6 +42,6 @@ public class PersonageController {
 
     @GetMapping
     public PersonageResponseDto getPersonageById(@RequestParam(name = "id") Long id) {
-        return personageMapper.toResponseDto(personageRepository.getById(id));
+        return personageMapper.toResponseDto(personageRepository.getWithEpisodesById(id));
     }
 }

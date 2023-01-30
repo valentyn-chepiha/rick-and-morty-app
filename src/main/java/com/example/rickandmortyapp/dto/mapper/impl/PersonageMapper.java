@@ -81,8 +81,12 @@ public class PersonageMapper implements
         dto.setEpisodes(personage.getEpisodes().stream()
                 .map(externalLinkMapper::toResponseDto)
                 .collect(Collectors.toList()));
-        dto.setOrigin(personageOriginMapper.toResponseDto(personage.getOrigin()));
-        dto.setLocation(personageLocationMapper.toResponseDto(personage.getLocation()));
+        if (personage.getOrigin() != null) {
+            dto.setOrigin(personageOriginMapper.toResponseDto(personage.getOrigin()));
+        }
+        if (personage.getLocation() != null) {
+            dto.setLocation(personageLocationMapper.toResponseDto(personage.getLocation()));
+        }
         return dto;
     }
 }

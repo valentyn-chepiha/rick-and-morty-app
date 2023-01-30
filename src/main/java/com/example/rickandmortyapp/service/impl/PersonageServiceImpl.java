@@ -63,7 +63,7 @@ public class PersonageServiceImpl implements PersonageService {
     public Personage getRandomPersonage() {
         long countPersonages = personageRepository.count();
         long id = (long) (Math.random() * countPersonages);
-        return personageRepository.findById(id).orElseThrow(() -> new
+        return personageRepository.findWithEpisodesById(id).orElseThrow(() -> new
                 DataProcessingException("Personage not found by id: " + id));
     }
 
